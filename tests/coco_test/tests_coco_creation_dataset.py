@@ -4,7 +4,6 @@ from hair_style_recommendation.dataset_conversion.data_to_coco import ConvertToC
 import pandas as pd 
 from PIL import Image
 import cv2
-import matplotlib.pyplot as plt 
 from hair_style_recommendation.utils.file_utils import read_from_json, apply_bbox_to_img
 
 """
