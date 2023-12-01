@@ -1,2 +1,3 @@
 data_folder/
 logs/
+__pycache__
