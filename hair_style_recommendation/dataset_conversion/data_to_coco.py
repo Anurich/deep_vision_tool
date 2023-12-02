@@ -80,4 +80,4 @@ class ConvertToCoco(Dataset):
         pass    
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(json_data={self.json_data}, path_to_image={self.path_to_image}, save_json_path={self.save_json_path}, logger_output_dir={self.logger_output_dir}, type_of_data_converstion={self.type_of_data_converstion})"
+        return super().__repr__()
