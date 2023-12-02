@@ -2,6 +2,7 @@ from typing import Dict, List, Any, Tuple, Union
 import numpy as np
 import cv2 
 import json
+import os 
 from PIL import Image
 
 
@@ -54,7 +55,7 @@ def convert_bbox_to_coco_bbox(bbox: List) -> List:
     return [int(x1), int(y1), int(w), int(h)]
 
 def convert_bbox_to_yolo_bbox(bbox: List) -> List:
-     """
+    """
         Args
             bbox is of type List 
         Returns
@@ -78,8 +79,8 @@ def yolo_normalization(yolo_bbox: List, imgH: int, imgW: int) -> List:
     """
     x, y, x_center, y_center = yolo_bbox
     # let's normalized it 
-    x_normalized  /= imgW
-    y_normalized  /= imgH
+    x_normalized  = x/imgW
+    y_normalized  = y/imgH
 
     x_center /= imgW
     y_center /= imgH
@@ -98,7 +99,39 @@ def get_all_categories(json_data: List[Dict[str, any]]) -> List[str]:
     except json.JSONDecodeError as e:
         raise e
 
+def write_to_text(filepath: str, records: str):
+    """
+     Args:
+        filepath: file location to save the text file
+        records: it's the record containing the information of category, centerx, centery, x, y
+    """
+
+    with open(filepath, "a", encoding="utf8") as fp:
+        fp.write(f"{records}\n")
+
+def is_dir_check(list_of_paths: List)-> None:
+    """
+        Args: 
+            List of path which need to be created if not exist
+    """
+    for path in list_of_paths:
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
+def save_img(image_path: str, img: np.array):
+    """
+     Args:
+        image_path: path to image  location
+        save_img_path: path where we want to save the image
+    """
+    cv2.imwrite(image_path, img)
+
 def apply_bbox_to_img(annotations: List[Dict[str, any]], img: np.array)-> np.array:
+    """
+        Args:
+            annotations : List of dictionary containing the information about bbox
+            img: image of numpy array (w, h, channel)
+    """
     allbboxes = [annt["bbox"] for annt in annotations]
     for bbox in allbboxes:
         x1, y1, w, h = list(map(int, bbox))
