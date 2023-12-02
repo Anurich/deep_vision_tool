@@ -40,7 +40,6 @@ class ConvertToCoco(Dataset):
     def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str) -> None:
         super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
-        self.type_of_data_converstion = type_of_data_converstion
         self.coco = Coco()
         self.all_categories = get_all_categories(self.json_data)
         if isinstance(self.all_categories, json.JSONDecodeError):
