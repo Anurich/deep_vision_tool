@@ -36,19 +36,16 @@ import json
 ]
 This is the format expected from this function in order to create a coco file.
 """
-logger = logging.getLogger(__name__)
-
-
 class ConvertToCoco(Dataset):
     def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str, type_of_data_converstion:str) -> None:
         super().__init__(json_data, path_to_image, save_json_path, logger_output_dir, type_of_data_converstion)
-        logging_util.initialize_logging(self.logger_output_dir)
+        self.logger = logging_util.initialize_logging(self.logger_output_dir)
         self.type_of_data_converstion = type_of_data_converstion
         if self.type_of_data_converstion.upper() == "COCO":
             self.coco = Coco()
             self.all_categories = get_all_categories(self.json_data)
             if isinstance(self.all_categories, json.JSONDecodeError):
-                logger.error(f"Json Error {self.all_categories}")
+                self.logger.error(f"Json Error {self.all_categories}")
             else:
                 self.coco_construction(self.all_categories)
         else:
@@ -75,9 +72,8 @@ class ConvertToCoco(Dataset):
                 )
 
             self.coco.add_image(cocimg)
-        
+        self.logger.info("Successfully created COCO file")
         save_json(data=self.coco.json,save_path=os.path.join(self.save_json_path,"coco.json"))
-        pass    
 
     def __repr__(self) -> str:
         return super().__repr__()
