@@ -6,7 +6,7 @@ import numpy as np
 from .dataset import Dataset
 from ..utils import logging_util
 from ..utils.file_utils import  get_all_categories, read_from_image,convert_bbox_to_yolo_bbox,\
-                        yolo_normalization, write_to_text,is_dir_check, save_img
+                        yolo_normalization, write_to_text,is_dir_check, save_img, read_from_image
 import json
 
 class convertoYOLO(Dataset):
@@ -37,9 +37,7 @@ class convertoYOLO(Dataset):
             imgname = data["img_name"]
             annotations = data["annotations"]
             imgpath = os.path.join(self.path_to_image,imgname)
-            img = Image.open(imgpath)
-            height = img.height
-            width  = img.width
+            img, height, width = read_from_image(imgpath)
             for annt in annotations:
                 label = annt["label"]
                 category_id  = self.label2index[label]
