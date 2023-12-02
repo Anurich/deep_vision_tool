@@ -53,6 +53,38 @@ def convert_bbox_to_coco_bbox(bbox: List) -> List:
     assert w != 0 or h != 0, "Zero width and height not allowed"
     return [int(x1), int(y1), int(w), int(h)]
 
+def convert_bbox_to_yolo_bbox(bbox: List) -> List:
+     """
+        Args
+            bbox is of type List 
+        Returns
+            converted bbox to yolo format
+    """
+    x1, y1, x2, y2 = bbox
+    x, y, w, h = convert_bbox_to_coco_bbox([x1,y1,x2,y2])
+    x_center = (x+(x+w))/2
+    y_center = (y+(y+h))/2
+
+    return [x, y, x_center, y_center]
+
+def yolo_normalization(yolo_bbox: List, imgH: int, imgW: int) -> List:
+
+    """
+    Args
+        yolo_bbox with [x, y, x_center, y_center]
+    Returns 
+        List of normalized bbox 
+    
+    """
+    x, y, x_center, y_center = yolo_bbox
+    # let's normalized it 
+    x_normalized  /= imgW
+    y_normalized  /= imgH
+
+    x_center /= imgW
+    y_center /= imgH
+    return [x_center, y_center,x_normalized, y_normalized] 
+
 
 def get_all_categories(json_data: List[Dict[str, any]]) -> List[str]:
     """
