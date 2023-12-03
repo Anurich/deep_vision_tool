@@ -1,6 +1,6 @@
 import pytest
 from conftest  import *
-from deep_vision_tool.dataset_conversion.data_to_coco import ConvertToCoco
+from deep_vision_tool.dataset_conversion.data_to_coco import CocoConverter
 import pandas as pd 
 from PIL import Image
 import cv2
@@ -77,7 +77,7 @@ def make_dummy_data(tmp_path):
 
 def test_convert_to_coco(make_dummy_data):
     json_data, imgpath, savejsonpath, logpath =make_dummy_data
-    ConvertToCoco(json_data=json_data, path_to_image=imgpath, save_json_path=savejsonpath, logger_output_dir=logpath)
+    CocoConverter(json_data=json_data, path_to_image=imgpath, save_json_path=savejsonpath, logger_output_dir=logpath)
     img = cv2.imread(os.path.join(imgpath, json_data[0]["img_name"]))
     jsdata = read_from_json(os.path.join(savejsonpath, "coco.json"))
     assert len(jsdata["annotations"]) == 2

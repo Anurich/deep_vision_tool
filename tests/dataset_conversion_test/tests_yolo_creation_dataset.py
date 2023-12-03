@@ -1,6 +1,6 @@
 import pytest
 from conftest  import *
-from deep_vision_tool.dataset_conversion.data_to_yolo import convertoYOLO
+from deep_vision_tool.dataset_conversion.data_to_yolo import YOLOConverter
 import pandas as pd 
 from PIL import Image
 import cv2
@@ -71,7 +71,7 @@ def make_dummy_data(tmp_path):
 
 def test_convert_to_yolo(make_dummy_data):
     json_data, imgpath, savejsonpath, logpath =make_dummy_data
-    convertoYOLO(json_data, imgpath, savejsonpath, logpath)
+    YOLOConverter(json_data, imgpath, savejsonpath, logpath)
     img_path = os.path.join(savejsonpath, "images")
     label_path = os.path.join(savejsonpath, "labels")
 
