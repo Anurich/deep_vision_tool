@@ -1,10 +1,10 @@
 import pytest
 from conftest  import *
-from hair_style_recommendation.dataset_conversion.data_to_yolo import convertoYOLO
+from deep_vision_tool.dataset_conversion.data_to_yolo import convertoYOLO
 import pandas as pd 
 from PIL import Image
 import cv2
-from hair_style_recommendation.utils.file_utils import read_from_json, apply_bbox_to_img
+from deep_vision_tool.utils.file_utils import read_from_json, apply_bbox_to_img
 
 """
 [

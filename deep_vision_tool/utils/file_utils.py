@@ -99,6 +99,9 @@ def get_all_categories(json_data: List[Dict[str, any]]) -> List[str]:
     except json.JSONDecodeError as e:
         raise e
 
+def read_text_file(filepath: str):
+    return open(filepath, "r").read()
+    
 def write_to_text(filepath: str, records: str):
     """
      Args:
