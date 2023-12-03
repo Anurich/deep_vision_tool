@@ -85,7 +85,6 @@
 ```
     from deep_vision_tool.dataset_conversion.data_to_coco import CocoConverter
     from deep_vision_tool.dataset_conversion.data_to_yolo import YOLOConverter
-    from deep_vision_tool.dataset_conversion.coco_to_yolo import CocoToYoloConverter
 
     # let's understand how we can convert the data to either COCO or YOLO format
     js_data = [
@@ -107,6 +106,8 @@
 ```
 * In this Example converting the COCO to YOLO format.
 ```
+    from deep_vision_tool.dataset_conversion.coco_to_yolo import CocoToYoloConverter
+
     # if we want to convert coco to yolo
     js_data = {
             "images":[
