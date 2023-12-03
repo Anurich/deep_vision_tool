@@ -104,7 +104,9 @@
     logs_dir ="logs/"
     CocoConverter(js_data, image_path, path_to_store, logs_dir)
     YOLOConverter(js_data, image_path, path_to_store, logs_dir)
-
+```
+* In this Example converting the COCO to YOLO format.
+```
     # if we want to convert coco to yolo
     js_data = {
             "images":[
@@ -153,6 +155,8 @@
                 }
             ]
         }
-
+    image_path="images/"
+    path_to_store_data = "data/"
+    logs_dir ="logs/"
     CocoToYoloConverter(js_data,image_path, path_to_store, logs_dir)
 ```
