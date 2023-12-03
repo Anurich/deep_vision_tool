@@ -24,7 +24,7 @@ def save_to_json(file_path: str, results):
         results (Dictionary)
     """
     with open(file_path, "w", encoding="utf8") as fp:
-        json.dump(file_path, fp, ensure_ascii=False, indent=4)
+        json.dump(results, fp, ensure_ascii=False, indent=4)
 
 
 def read_from_image(img_path: str) -> Tuple[Union[np.array, int, int]]:
@@ -54,15 +54,19 @@ def convert_bbox_to_coco_bbox(bbox: List) -> List:
     assert w != 0 or h != 0, "Zero width and height not allowed"
     return [int(x1), int(y1), int(w), int(h)]
 
-def convert_bbox_to_yolo_bbox(bbox: List) -> List:
+def convert_bbox_to_yolo_bbox(bbox: List, is_coco:bool=False) -> List:
     """
         Args
             bbox is of type List 
         Returns
             converted bbox to yolo format
     """
-    x1, y1, x2, y2 = bbox
-    x, y, w, h = convert_bbox_to_coco_bbox([x1,y1,x2,y2])
+    if is_coco==False:
+        x1, y1, x2, y2 = bbox
+        x, y, w, h = convert_bbox_to_coco_bbox([x1,y1,x2,y2])
+    else:
+        x, y, w, h = bbox
+        
     x_center = (x+(x+w))/2
     y_center = (y+(y+h))/2
 
@@ -140,3 +144,21 @@ def apply_bbox_to_img(annotations: List[Dict[str, any]], img: np.array)-> np.arr
         x1, y1, w, h = list(map(int, bbox))
         cv2.rectangle(img, (x1, y1), (x1+w, y1+h),  color=(0,0,255),  thickness=2)
     return img 
+
+def save_categories(categories: List, path_to_store_label: str):
+    """
+        Args: 
+            categories: list of labels
+    """
+    c2index = {label:idx for idx, label in enumerate(categories)}
+    index2c = {value: key for key, value in c2index.items()}
+    for filename in ["labels.txt", "label2index.json", "index2label.json"]:
+        if filename.endswith("txt"):
+            for cat in categories:
+                write_to_text(os.path.join(path_to_store_label, filename), cat)
+        else:
+            # let's store in json format 
+            record = c2index if "label2index" in filename else index2c 
+            save_to_json(os.path.join(path_to_store_label, filename),record)
+            
+

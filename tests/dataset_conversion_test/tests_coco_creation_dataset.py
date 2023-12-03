@@ -80,8 +80,9 @@ def test_convert_to_coco(make_dummy_data):
     CocoConverter(json_data=json_data, path_to_image=imgpath, save_json_path=savejsonpath, logger_output_dir=logpath)
     img = cv2.imread(os.path.join(imgpath, json_data[0]["img_name"]))
     jsdata = read_from_json(os.path.join(savejsonpath, "coco.json"))
+    print(savejsonpath)
     assert len(jsdata["annotations"]) == 2
-    assert len(os.listdir(savejsonpath)) == 1
+    assert len(os.listdir(savejsonpath)) == 4
     assert os.listdir(savejsonpath)[0] == "coco.json"
 
 

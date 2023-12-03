@@ -74,7 +74,6 @@ def test_convert_to_yolo(make_dummy_data):
     YOLOConverter(json_data, imgpath, savejsonpath, logpath)
     img_path = os.path.join(savejsonpath, "images")
     label_path = os.path.join(savejsonpath, "labels")
-
     assert len(os.listdir(img_path)) == len(os.listdir(label_path))
-    assert len(os.listdir(savejsonpath)) == 2
+    assert len(os.listdir(savejsonpath)) == 5
 
