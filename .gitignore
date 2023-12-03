@@ -1,8 +1,9 @@
 data_folder/.DS_Store
 .coverage
-
 logs/
 __pycache__/
 .pytest_cache/
 dist/
 deep_vision_tool.egg-info/
+
+#find . -name .coverage -print0 | xargs -0 git rm -f --ignore-unmatch 
