@@ -1,7 +1,8 @@
+.DS_Store
+.converage
+
 logs/
 __pycache__/
-.DS_Store
-.coverage*
 .pytest_cache/
 dist/
 deep_vision_tool.egg-info/
