@@ -54,19 +54,16 @@ class CocoConverter(Dataset):
                 self.convert(self.all_categories)
 
     def is_valid_json_structure(self,data):
-        if not isinstance(data, list) or len(data) != 1:
+        if not isinstance(data, list):
             return False
         entry = data[0]
         if not isinstance(entry, dict) or "image_id" not in entry or "img_name" not in entry or "annotations" not in entry:
             return False
-
         if not isinstance(entry["image_id"], int) or not isinstance(entry["img_name"], str) or not isinstance(entry["annotations"], list):
             return False
-
         for annotation in entry["annotations"]:
             if not isinstance(annotation, dict) or "label" not in annotation or "bbox" not in annotation or "segmentation" not in annotation or "area" not in annotation:
                 return False
-
             if not isinstance(annotation["label"], str) or not isinstance(annotation["bbox"], list) or len(annotation["bbox"]) != 4 or not all(isinstance(coord, (int, float)) for coord in annotation["bbox"]) or not isinstance(annotation["segmentation"], list) or not isinstance(annotation["area"], (int, float)):
                 return False
 

@@ -30,7 +30,7 @@ class YOLOConverter(Dataset):
         return super().__repr__()
 
     def is_valid_json_structure(self,data):
-        if not isinstance(data, list) or len(data) != 1:
+        if not isinstance(data, list):
             return False
         entry = data[0]
         if not isinstance(entry, dict) or "image_id" not in entry or "img_name" not in entry or "annotations" not in entry:
