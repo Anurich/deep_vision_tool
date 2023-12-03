@@ -161,3 +161,36 @@
     logs_dir ="logs/"
     CocoToYoloConverter(js_data,image_path, path_to_store, logs_dir)
 ```
+# Run Through ArgParser
+* There are three category in which you can convert the data
+* COCO category type (to_coco)
+* YOLO category type (to_yolo)
+* COCO2YOLO category type (coco_to_yolo)
+* Dummy files are present inside the data_folder, if one needs to run it's own file just follow the structure of the files
+```bash
+    |--data_folder
+    |     |--training_images
+          |--file_name.json
+```
+* File_name.json should follow the structure of json mentioned above if we are converting to to_coco or to_yolo, the file structure is different. But, from COCO to YOLO we simply pass the coco structure.
+```
+python data_conversion_test.py --json_data_path "data_folder/file.json"
+                               --path_to_images "data_folder/training_images/"
+                               --storage_path "data_folder/coco"
+                               --log_directory "logs/"
+                               --type_of_conversion "to_coco"
+
+python data_conversion_test.py --json_data_path "data_folder/file.json"
+                               --path_to_images "data_folder/training_images/"
+                               --storage_path "data_folder/yolo"
+                               --log_directory "logs/"
+                               --type_of_conversion "to_yolo"
+
+python data_conversion_test.py --json_data_path "data_folder/coco/coco.json"
+                               --path_to_images "data_folder/training_images/"
+                               --storage_path "data_folder/coco"
+                               --log_directory "logs/"
+                               --type_of_conversion "coco_to_yolo"
+```
+
+
