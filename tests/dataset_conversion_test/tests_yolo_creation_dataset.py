@@ -55,10 +55,14 @@ def make_dummy_data(tmp_path):
                 {
                     "label": "car",
                     "bbox": bboxes[0],
+                    "segmentation": [0],
+                    "area":0
                 },
                 {
                     "label": "car",
                     "bbox": bboxes[1],
+                    "segmentation": [0],
+                    "area":0
                 }
             ]
         }
@@ -74,6 +78,7 @@ def test_convert_to_yolo(make_dummy_data):
     YOLOConverter(json_data, imgpath, savejsonpath, logpath)
     img_path = os.path.join(savejsonpath, "images")
     label_path = os.path.join(savejsonpath, "labels")
+    print(savejsonpath)
     assert len(os.listdir(img_path)) == len(os.listdir(label_path))
     assert len(os.listdir(savejsonpath)) == 5
 
