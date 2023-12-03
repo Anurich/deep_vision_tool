@@ -3,6 +3,7 @@ from conftest  import *
 from deep_vision_tool.dataset_conversion.data_to_coco import CocoConverter
 import pandas as pd 
 from PIL import Image
+from pprint import pprint
 import cv2
 from deep_vision_tool.utils.file_utils import read_from_json, apply_bbox_to_img
 
@@ -67,6 +68,7 @@ def make_dummy_data(tmp_path):
 
     tmppath = tmp_path / "tmp"
     tmppath.mkdir()
+    pprint(json_data)
     return [json_data, "data_folder/training_images/", tmppath, "logs/"]
 
 
@@ -82,6 +84,4 @@ def test_convert_to_coco(make_dummy_data):
     jsdata = read_from_json(os.path.join(savejsonpath, "coco.json"))
     assert len(jsdata["annotations"]) == 2
     assert len(os.listdir(savejsonpath)) == 4
-
-
-
+    

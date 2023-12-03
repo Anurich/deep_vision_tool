@@ -39,7 +39,7 @@ class YOLOConverter(Dataset):
         path_of_img_to_save = os.path.join(self.save_json_path, "images")
         labels_path = os.path.join(self.save_json_path, "labels")
         is_dir_check([self.save_json_path, path_of_img_to_save, labels_path])
-        self.logger.info(f"Categories: {self.allcategories}")
+        self.logger.info(f"Categories: {self.all_categories}")
         for data in self.json_data:
             imgname = data["img_name"]
             annotations = data["annotations"]
