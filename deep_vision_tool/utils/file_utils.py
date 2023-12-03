@@ -112,7 +112,7 @@ def write_to_text(filepath: str, records: str):
         filepath: file location to save the text file
         records: it's the record containing the information of category, centerx, centery, x, y
     """
-
+    
     with open(filepath, "a", encoding="utf8") as fp:
         fp.write(f"{records}\n")
 

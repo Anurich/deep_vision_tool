@@ -10,7 +10,7 @@ from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
 from sahi.utils.file import save_json
 from .dataset import Dataset
 from ..utils import logging_util
-from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories
+from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories,is_dir_check
 import json
 """
 [
@@ -46,6 +46,7 @@ class CocoConverter(Dataset):
             self.logger.error(f"Json Error {self.all_categories}")
         else:
             self.logger.info("Starting Conversion To COCO....")
+            is_dir_check([self.save_json_path])
             save_categories(self.all_categories, self.save_json_path)
             self.convert(self.all_categories)
 
