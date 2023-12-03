@@ -57,7 +57,6 @@ class CocoConverter(Dataset):
         if not isinstance(data, list) or len(data) != 1:
             return False
         entry = data[0]
-        print(entry)
         if not isinstance(entry, dict) or "image_id" not in entry or "img_name" not in entry or "annotations" not in entry:
             return False
 
@@ -68,7 +67,6 @@ class CocoConverter(Dataset):
             if not isinstance(annotation, dict) or "label" not in annotation or "bbox" not in annotation or "segmentation" not in annotation or "area" not in annotation:
                 return False
 
-            print(annotation)
             if not isinstance(annotation["label"], str) or not isinstance(annotation["bbox"], list) or len(annotation["bbox"]) != 4 or not all(isinstance(coord, (int, float)) for coord in annotation["bbox"]) or not isinstance(annotation["segmentation"], list) or not isinstance(annotation["area"], (int, float)):
                 return False
 

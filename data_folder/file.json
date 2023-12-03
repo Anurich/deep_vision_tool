@@ -1,0 +1,12 @@
+[
+    {"annotations": [{"area": 0,
+                   "bbox": [0, 194, 189, 273],
+                   "label": "car",
+                   "segmentation": [0]},
+                  {"area": 0,
+                   "bbox": [283, 194, 530, 278],
+                   "label": "car",
+                   "segmentation": [0]}],
+  "image_id": 1,
+  "img_name": "vid_4_720.jpg"}
+]
