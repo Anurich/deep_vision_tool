@@ -40,15 +40,39 @@ class CocoConverter(Dataset):
     def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str) -> None:
         super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
-        self.coco = Coco()
-        self.all_categories = get_all_categories(self.json_data)
-        if isinstance(self.all_categories, json.JSONDecodeError):
-            self.logger.error(f"Json Error {self.all_categories}")
+        if not self.is_valid_json_structure(json_data):
+            self.logger.error("Error! Please check the file structure")
         else:
-            self.logger.info("Starting Conversion To COCO....")
-            is_dir_check([self.save_json_path])
-            save_categories(self.all_categories, self.save_json_path)
-            self.convert(self.all_categories)
+            self.coco = Coco()
+            self.all_categories = get_all_categories(self.json_data)
+            if isinstance(self.all_categories, json.JSONDecodeError):
+                self.logger.error(f"Json Error {self.all_categories}")
+            else:
+                self.logger.info("Starting Conversion To COCO....")
+                is_dir_check([self.save_json_path])
+                save_categories(self.all_categories, self.save_json_path)
+                self.convert(self.all_categories)
+
+    def is_valid_json_structure(self,data):
+        if not isinstance(data, list) or len(data) != 1:
+            return False
+        entry = data[0]
+        print(entry)
+        if not isinstance(entry, dict) or "image_id" not in entry or "img_name" not in entry or "annotations" not in entry:
+            return False
+
+        if not isinstance(entry["image_id"], int) or not isinstance(entry["img_name"], str) or not isinstance(entry["annotations"], list):
+            return False
+
+        for annotation in entry["annotations"]:
+            if not isinstance(annotation, dict) or "label" not in annotation or "bbox" not in annotation or "segmentation" not in annotation or "area" not in annotation:
+                return False
+
+            print(annotation)
+            if not isinstance(annotation["label"], str) or not isinstance(annotation["bbox"], list) or len(annotation["bbox"]) != 4 or not all(isinstance(coord, (int, float)) for coord in annotation["bbox"]) or not isinstance(annotation["segmentation"], list) or not isinstance(annotation["area"], (int, float)):
+                return False
+
+        return True
 
     def convert(self, categories_name: List[str]):
         # creating the category of coco

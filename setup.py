@@ -11,7 +11,7 @@ def read_from_file(path):
 
 setup(
     name='deep_vision_tool',
-    version='0.2',
+    version='0.2.1',
     description="Make your computer vision task easy",
     url="https://github.com/Anurich/hair_style_recommendation",
     author="AI Team",

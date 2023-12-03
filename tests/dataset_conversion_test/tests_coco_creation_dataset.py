@@ -42,7 +42,6 @@ def make_dummy_data(tmp_path):
         if len(group_index) > 1:
             imgname = img_name
             gindex  = group_index
-    
     bboxes = []
     for index in gindex:
         x1, y1, x2, y2 = df.loc[index][["xmin", "ymin", "xmax", "ymax"]]
@@ -57,10 +56,14 @@ def make_dummy_data(tmp_path):
                 {
                     "label": "car",
                     "bbox": bboxes[0],
+                    "segmentation": [0],
+                    "area":0
                 },
                 {
                     "label": "car",
                     "bbox": bboxes[1],
+                    "segmentation": [0],
+                    "area":0
                 }
             ]
         }
@@ -68,13 +71,7 @@ def make_dummy_data(tmp_path):
 
     tmppath = tmp_path / "tmp"
     tmppath.mkdir()
-    pprint(json_data)
     return [json_data, "data_folder/training_images/", tmppath, "logs/"]
-
-
-
-
-
 
 
 def test_convert_to_coco(make_dummy_data):
@@ -84,4 +81,3 @@ def test_convert_to_coco(make_dummy_data):
     jsdata = read_from_json(os.path.join(savejsonpath, "coco.json"))
     assert len(jsdata["annotations"]) == 2
     assert len(os.listdir(savejsonpath)) == 4
-    
