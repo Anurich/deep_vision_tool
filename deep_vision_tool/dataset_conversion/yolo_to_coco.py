@@ -5,7 +5,7 @@ from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
 from sahi.utils.file import save_json
 from .dataset import Dataset
 from ..utils import logging_util
-from ..utils.file_utils import read_from_image,convert_yolo_to_coco, read_text_file,bbox_to_segmentation,is_dir_check
+from ..utils.file_utils import read_from_image,convert_yolo_to_coco, read_text_file,bbox_to_segmentation,is_dir_check,save_categories
 import json
 
 
@@ -51,4 +51,5 @@ class YoloToCocoConverter:
         for category_id, label in cid_to_label.items():
             self.coco.add_category(CocoCategory(id=category_id, name=label))
         # let's save the fies 
+        save_categories(list(cid_to_label.values()), self.save_json_path)
         save_json(self.coco.json, save_path=os.path.join(self.save_json_path,"coco.json"), indent=4)
