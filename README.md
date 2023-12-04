@@ -74,9 +74,18 @@
         ]
 ```
 * If we want to convert the data from **YOLO** to **COCO**, In that case we need to pass the data into format as shown below:
+```bash
+    |--data_folder
+        |--yolo
+            |--images
+                |im.png
+            |--labels
+                |im.txt
+            |labels.txt
+
 ```
-    Need to work
-```
+* We need to pass the data into this structure if we want to use the yolo to coco conversion.
+* In order to test it we can run the to_yolo, followed by yolo_to_coco.
 # How To Use The Library.
 ```
     pip install -i https://test.pypi.org/simple/ deep-vision-tool==0.1.8
@@ -191,6 +200,13 @@ python data_conversion_test.py --json_data_path "data_folder/coco/coco.json"
                                --storage_path "data_folder/coco"
                                --log_directory "logs/"
                                --type_of_conversion "coco_to_yolo"
+
+python data_conversion_test.py --text_path "data_folder/yolo/labels/" \
+                               --label_file_path "data_folder/yolo/labels.txt" \
+                               --path_to_images "data_folder/yolo/images/" \
+                               --storage_path "data_folder/yolo_to_coco/" \
+                               --log_directory "logs/" \
+                               --type_of_conversion "yolo_to_coco"
 
 
 ```
