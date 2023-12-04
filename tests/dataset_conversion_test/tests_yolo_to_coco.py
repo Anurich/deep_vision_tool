@@ -21,5 +21,4 @@ def dummy_data(tmp_path):
 
 def test_yolo_to_coco_converter(dummy_data):
     text_path, label_path, image_path, save_directory, log_dir = dummy_data
-    print(save_directory)
     YoloToCocoConverter(text_path, label_path, image_path, save_directory, log_dir)
