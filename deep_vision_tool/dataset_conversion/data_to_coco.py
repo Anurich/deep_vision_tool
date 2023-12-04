@@ -86,7 +86,7 @@ class CocoConverter(Dataset):
                         bbox=converted_bbox_to_coco,
                         category_id=category_dict[annt["label"]],
                         category_name=annt["label"],
-                        segmentation= [bbox_to_segmentation(convert_bbox_to_coco_bbox)],
+                        segmentation= [bbox_to_segmentation(converted_bbox_to_coco)],
                     )
                 )
 
