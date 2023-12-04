@@ -10,7 +10,7 @@ from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
 from sahi.utils.file import save_json
 from .dataset import Dataset
 from ..utils import logging_util
-from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories,is_dir_check
+from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories,is_dir_check,bbox_to_segmentation
 import json
 """
 [
@@ -86,7 +86,7 @@ class CocoConverter(Dataset):
                         bbox=converted_bbox_to_coco,
                         category_id=category_dict[annt["label"]],
                         category_name=annt["label"],
-
+                        segmentation= [bbox_to_segmentation(convert_bbox_to_coco_bbox)],
                     )
                 )
 

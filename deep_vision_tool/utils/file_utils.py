@@ -70,7 +70,7 @@ def convert_bbox_to_yolo_bbox(bbox: List, is_coco:bool=False) -> List:
     x_center = (x+(x+w))/2
     y_center = (y+(y+h))/2
 
-    return [x, y, x_center, y_center]
+    return [x_center, y_center, w, h]
 
 def yolo_normalization(yolo_bbox: List, imgH: int, imgW: int) -> List:
 
@@ -81,14 +81,14 @@ def yolo_normalization(yolo_bbox: List, imgH: int, imgW: int) -> List:
         List of normalized bbox 
     
     """
-    x, y, x_center, y_center = yolo_bbox
+    x_center, y_center, w, h  = yolo_bbox
     # let's normalized it 
-    x_normalized  = x/imgW
-    y_normalized  = y/imgH
+    x_center  = x_center/imgW
+    y_center  = y_center/imgH
 
-    x_center /= imgW
-    y_center /= imgH
-    return [x_center, y_center,x_normalized, y_normalized] 
+    w /= imgW
+    h /= imgH
+    return [x_center, y_center, w, h] 
 
 
 def get_all_categories(json_data: List[Dict[str, any]]) -> List[str]:
@@ -162,3 +162,41 @@ def save_categories(categories: List, path_to_store_label: str):
             save_to_json(os.path.join(path_to_store_label, filename),record)
             
 
+def convert_yolo_to_coco(bboxs: List, width: int, height: int) -> List:
+    """
+        Args: 
+            bboxs: List of yolo annotations.
+    """
+    assert len(bboxs) == 4
+    bboxs = list(map(float, bboxs))
+    x_center, y_center, w, h = bboxs
+    bbox_x = (float(x_center) - float(w) / 2) * width
+    bbox_y = (float(y_center) - float(h) / 2) * height
+    w = float(w) * width
+    h = float(h) * height
+    return [bbox_x, bbox_y, w, h]
+
+
+def bbox_to_segmentation(bbox):
+
+    """
+    Convert COCO bounding box to segmentation.
+
+    Args:
+    - bbox (list): List containing COCO bounding box coordinates [x, y, width, height].
+
+    Returns:
+    - segmentation (list): List containing segmentation points [x1, y1, x2, y2, ..., xn, yn].
+    """
+    x, y, width, height = bbox
+
+    # Calculate the four corner points of the bounding box
+    x1, y1 = x, y
+    x2, y2 = x + width, y
+    x3, y3 = x + width, y + height
+    x4, y4 = x, y + height
+
+    # Return the segmentation as a list of x, y coordinates
+    segmentation = [x1, y1, x2, y2, x3, y3, x4, y4]
+
+    return segmentation

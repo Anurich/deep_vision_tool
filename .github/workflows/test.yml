@@ -28,3 +28,4 @@ jobs:
         pytest -s -v tests/dataset_conversion_test/tests_coco_creation_dataset.py
         pytest -s -v tests/dataset_conversion_test/tests_yolo_creation_dataset.py
         pytest -s -v tests/dataset_conversion_test/tests_coco_to_yolo.py
+        pytest -s -v tests/dataset_conversion_test/tests_yolo_to_coco.py
