@@ -191,6 +191,8 @@ python data_conversion_test.py --json_data_path "data_folder/coco/coco.json"
                                --storage_path "data_folder/coco"
                                --log_directory "logs/"
                                --type_of_conversion "coco_to_yolo"
+
+
 ```
 
 

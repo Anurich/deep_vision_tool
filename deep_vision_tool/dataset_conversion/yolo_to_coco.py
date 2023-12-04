@@ -51,5 +51,6 @@ class YoloToCocoConverter:
         for category_id, label in cid_to_label.items():
             self.coco.add_category(CocoCategory(id=category_id, name=label))
         # let's save the fies 
+        self.logger.info("Finishing Process of creating the CoCo dataset...")
         save_categories(list(cid_to_label.values()), self.save_json_path)
         save_json(self.coco.json, save_path=os.path.join(self.save_json_path,"coco.json"), indent=4)
