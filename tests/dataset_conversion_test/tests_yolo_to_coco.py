@@ -23,4 +23,4 @@ def test_yolo_to_coco_converter(dummy_data):
     text_path, label_path, image_path, save_directory, log_dir = dummy_data
     YoloToCocoConverter(text_path, label_path, image_path, save_directory, log_dir)
     assert len(os.listdir(save_directory)) == 4
-    assert os.listdir(save_directory)[0] == "coco.json"
+    assert "coco.json" in os.listdir(save_directory)
