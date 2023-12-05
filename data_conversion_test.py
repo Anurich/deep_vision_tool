@@ -58,6 +58,7 @@ def check_parse_argument(args: Dict):
     
     expected_keys = {'json_data_path', 'path_to_images', 'storage_path', 'log_directory', 'type_of_conversion'}
     expected_keys_yolo_to_coco = {'text_path','label_file_path', 'path_to_images', 'storage_path', 'log_directory', 'type_of_conversion'}
+    args = {key: value for key, value in args.items() if value is not None}
 
     if args["type_of_conversion"] == "to_coco":
         validate_input_parameters(args,expected_keys)
@@ -69,8 +70,7 @@ def check_parse_argument(args: Dict):
         validate_input_parameters(args,expected_keys)
         CocoToYoloConverter(json_data=js_data, path_to_image=args["path_to_images"], save_json_path=args["storage_path"],logger_output_dir=args["log_directory"])
     if args["type_of_conversion"]=="yolo_to_coco":
-        filtered_args = {key: value for key, value in args.items() if value is not None}
-        validate_input_parameters_yolo_to_coco(filtered_args, expected_keys_yolo_to_coco)
+        validate_input_parameters_yolo_to_coco(args, expected_keys_yolo_to_coco)
         YoloToCocoConverter(text_path=args["text_path"],label_file_path=args["label_file_path"], path_to_image=args["path_to_images"], save_json_path=args["storage_path"],logger_output_dir=args["log_directory"])
 
 
