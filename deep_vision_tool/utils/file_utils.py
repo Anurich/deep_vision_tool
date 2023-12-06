@@ -1,6 +1,7 @@
 from typing import Dict, List, Any, Tuple, Union
 import numpy as np
 import cv2 
+import pickle
 import json
 import matplotlib.pyplot as plt
 import os 
@@ -359,3 +360,34 @@ def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]],
         plt.subplot(1, 2, 2), plt.imshow(overlay), plt.title('Overlay')
         cv2.imwrite(os.path.join(save_directory, "seg_" + filename), cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
         plt.show()  
+
+
+def store_pickle(data, file_path):
+    """
+    Store data in a pickle file.
+
+    Parameters:
+    - data: Any data structure to be stored.
+    - file_path (str): Path where the pickle file will be saved.
+
+    Returns:
+    - None
+    """
+    with open(os.path.join(file_path,"coco_img_obj.pickle"), 'wb') as file:
+        pickle.dump(data, file)
+    print(f'Data successfully stored in {file_path}')
+
+def read_pickle(file_path):
+    """
+    Read data from a pickle file.
+
+    Parameters:
+    - file_path (str): Path of the pickle file to be read.
+
+    Returns:
+    - Any: Data read from the pickle file.
+    """
+    with open(os.path.join(file_path,"coco_img_obj.pickle"), 'rb') as file:
+        data = pickle.load(file)
+    print(f'Data successfully read from {file_path}')
+    return data

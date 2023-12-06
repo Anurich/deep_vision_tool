@@ -6,13 +6,13 @@ from typing import Dict, List, Any
 import numpy as np
 import pandas as pd 
 from ..utils.file_utils import read_from_json, read_from_image, is_coco_format, apply_bbox_to_img, \
-      visualize_and_save, visualize_segmentation_mask, save_to_json
+      visualize_and_save, visualize_segmentation_mask, is_dir_check,store_pickle
 import os
 from ..utils.logging_util import initialize_logging
 import logging
 
 class ObjectDetection:
-    def __init__(self, filepath: str,  type_of_data: str, save_image_object:str, image_path: str=None, log_dir:str=None) -> None:
+    def __init__(self, filepath: str,  type_of_data: str, save_image_object_path:str, image_path: str=None, log_dir:str=None) -> None:
         """
             1. if type_of_data == "yolo" simply pass the 
         """
@@ -20,12 +20,15 @@ class ObjectDetection:
         self.filepath = filepath
         self.type_of_data = type_of_data
         self.image_path = image_path
-        self.save_image_object = save_image_object
+        self.save_image_object_path = save_image_object_path
         # we have currently two type of format that we cater 
         # 1 YOLO
         # 2 COCO
-       
-    def coco_postprocessing(self)-> List[ImageInfo]:
+    def get_yolo_image_object(self) -> List[ImageInfo]:
+        pass
+    
+
+    def get_coco_image_object(self)-> List[ImageInfo]:
         """
         Perform post-processing for COCO data.
 
@@ -33,7 +36,7 @@ class ObjectDetection:
         List[ImageInfo]: A list of ImageInfo objects containing image and annotation information.
         """
         assert self.type_of_data.lower() == "coco", self.logger.error("The type of data is not coco")
-        postprocessed_coco_image_annotations = []
+        coco_image_obj = []
         coco_file = list(filter(lambda x: x=="coco.json",os.listdir(self.filepath)))[0]
         coco_data = read_from_json(os.path.join(self.filepath,coco_file))
         # we need to check also if the data is coco type 
@@ -64,11 +67,12 @@ class ObjectDetection:
             
             # now that we have an image object and annotations object we can simply call super object with both image and annotations information
             img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations)
-            postprocessed_coco_image_annotations.append(img_object)
+            coco_image_obj.append(img_object)
         
-        self.logger.info("Succesfully created image object.")        
-        #save_to_json(self.save_image_object, postprocessed_coco_image_annotations)
-        return postprocessed_coco_image_annotations
+        self.logger.info("Succesfully created image object.")
+        is_dir_check([self.save_image_object_path])
+        store_pickle(coco_image_obj, self.save_image_object_path)
+        return coco_image_obj
             
 
     def visualize_image_object(self, image_info_object: List[ImageInfo], total_images: int =1, plot:str="both", save_directory: str=None):
@@ -83,9 +87,7 @@ class ObjectDetection:
         """
         # total number of image object 
         if save_directory!=None:
-            if not os.path.isdir(save_directory):
-                os.mkdir(save_directory)
-
+            is_dir_check([save_directory])
         self.logger.info(f"Visualising the total {total_images} images")
         for imginfo in image_info_object[:total_images]:
             imgfile = imginfo.filename
@@ -118,5 +120,8 @@ class ObjectDetection:
                     self.logger.warning(results_with_bbox)
                 if isinstance(results_with_segment, str):
                     self.logger.warning(results_with_segment)
+        
         self.logger.info("Visualization finished")
     
+    def check_stats(self):
+        pass
