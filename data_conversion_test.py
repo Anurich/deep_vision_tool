@@ -44,8 +44,6 @@ def validate_input_parameters_yolo_to_coco(params, expected_keys):
     assert params['label_file_path'].endswith('.txt'), "label file  should end with '.txt'"
 
 
-    pass
-
 def check_parse_argument(args: Dict):
     """
         data_folder 
