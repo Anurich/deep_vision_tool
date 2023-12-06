@@ -23,10 +23,8 @@ def initialize_logging(output_directory: str = None):
         level=logging.INFO,
         handlers=handlers
     )
-
     # Use a logger with the same name as the module
     logger = logging.getLogger(__name__)
-
     # Log a message to indicate the start of the process
     logger.info("Process Starting........")
 

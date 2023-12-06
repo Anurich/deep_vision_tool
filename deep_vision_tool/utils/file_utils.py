@@ -299,18 +299,44 @@ def is_coco_format(data: Dict[str, Any]) -> bool:
 
     return True
 
-def visualize_and_save(img: np.array, save_directory: str, filename: str):
+def visualize_and_save(img: np.array, save_directory: str, filename: str) -> Union[str, bool]:
+    """
+    Display an image and save it to the specified directory.
+
+    Parameters:
+    - img (np.array): The image to visualize.
+    - save_directory (str): The directory to save the image.
+    - filename (str): The name of the file to save.
+
+    Returns:
+    - Union[str, bool]: Returns a string if save_directory is empty, otherwise returns True after saving the image.
+    """
     plt.imshow(img)
     plt.show()
-    # we gonna save this img inside the directory 
-    if save_directory == None:
+
+    # Save the image inside the directory
+    if save_directory is None:
         return "Save directory is empty"
     else:
-        cv2.imwrite(os.path.join(save_directory, filename),cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        cv2.imwrite(os.path.join(save_directory, filename), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         return True
 
-def visualize_segmentation_mask(coordinates_list: List[List[Union[int,float]]], \
-                                 img: np.array, width: int, height: int, save_directory: str, filename: str): 
+def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]], img: np.array,
+                                width: int, height: int, save_directory: str, filename: str):
+    """
+    Visualize segmentation masks on top of the original image and save the result.
+
+    Parameters:
+    - coordinates_list (List[List[Union[int, float]]]): List of segmentation points for a single image.
+    - img (np.array): The original image.
+    - width (int): Width of the image.
+    - height (int): Height of the image.
+    - save_directory (str): The directory to save the visualized image.
+    - filename (str): The name of the file to save.
+
+    Returns:
+    - None: Displays the visualized image and saves it to the specified directory.
+    """
     masks = []
     for segment in coordinates_list:
         segmentation = np.array(segment, dtype=np.int32).reshape((-1, 2))
@@ -318,24 +344,18 @@ def visualize_segmentation_mask(coordinates_list: List[List[Union[int,float]]], 
         cv2.fillPoly(mask, [segmentation], color=1)
         masks.append(mask)
 
-    # let's add these masks on top of the image
+    # Add these masks on top of the image
     overlay = img.copy()
     color: Tuple[int, int, int] = (255, 0, 0)
     color = np.asarray(color)
+
     for mask in masks:
         masked = np.ma.MaskedArray(img, mask=cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB), fill_value=color)
-        overlay = cv2.addWeighted(overlay, 1,masked.filled(),0.5, 0)
-    
-    if save_directory == None:
-        return f"Save directory is empty"
-    else:
+        overlay = cv2.addWeighted(overlay, 1, masked.filled(), 0.5, 0)
+
+    # Save the visualized image and display it
+    if save_directory is not None:
         plt.subplot(1, 2, 1), plt.imshow(img), plt.title('Original Image')
         plt.subplot(1, 2, 2), plt.imshow(overlay), plt.title('Overlay')
-        cv2.imwrite(os.path.join(save_directory,"seg_"+filename,), cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
-        plt.show()
-        
-
-
-
-   
-  
+        cv2.imwrite(os.path.join(save_directory, "seg_" + filename), cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
+        plt.show()  

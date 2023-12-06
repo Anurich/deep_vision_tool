@@ -116,5 +116,4 @@ class ObjectDetection:
                     self.logger.warning(results_with_bbox)
                 if isinstance(results_with_segment, str):
                     self.logger.warning(results_with_segment)
-
         self.logger.info("Visualization finished")
