@@ -5,7 +5,7 @@ import pandas as pd
 from PIL import Image
 from pprint import pprint
 import cv2
-from deep_vision_tool.utils.file_utils import read_from_json, apply_bbox_to_img
+from deep_vision_tool.utils.file_utils import read_from_json
 
 """
 [

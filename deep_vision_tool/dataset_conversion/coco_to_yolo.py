@@ -6,7 +6,7 @@ import numpy as np
 from .dataset import Dataset
 from ..utils import logging_util
 from ..utils.file_utils import  get_all_categories, read_from_image,convert_bbox_to_yolo_bbox,\
-                        yolo_normalization, write_to_text,is_dir_check, save_img, read_from_image,save_categories
+                        yolo_normalization, write_to_text,is_dir_check, save_img, read_from_image,save_categories, is_coco_format
 import json
 
 
@@ -16,12 +16,10 @@ class CocoToYoloConverter(Dataset):
     def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str) -> None:
         super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
-        if self.is_coco_format(json_data) != True:
+        if is_coco_format(json_data) != True:
             self.logger.error("Error! file is not in COCO format.")
         else:
             self.convert()
-
-
 
     def convert(self):
         images = self.json_data["images"]
@@ -47,39 +45,6 @@ class CocoToYoloConverter(Dataset):
                 write_to_text(os.path.join(labels_path, imgname.split(".")[0]+".txt"), records)
                 save_img(os.path.join(path_of_img_to_save, imgname), np.array(img))
         self.logger.info("Successfully convered COCO to YOLO file format.")
-
-
-    
-    def is_coco_format(self, data: Dict[str, any]) ->  bool:
-        # Check for the presence of required keys
-        required_keys = {'annotations', 'images', 'categories'}
-        if not all(key in data for key in required_keys):
-            return False
-
-        # Check the structure of the 'annotations' key
-        if not isinstance(data['annotations'], list):
-            return False
-
-        for annotation in data['annotations']:
-            # Check for the presence of required keys in each annotation
-            annotation_keys = {'image_id', 'category_id', 'bbox'}
-            if not all(key in annotation for key in annotation_keys):
-                return False
-
-            # Check the structure of the bounding box
-            if not isinstance(annotation['bbox'], list) or len(annotation['bbox']) != 4:
-                return False
-
-        # Check the structure of the 'images' key
-        if not isinstance(data['images'], list):
-            return False
-
-        # Check the structure of the 'categories' key
-        if not isinstance(data['categories'], list):
-            return False
-
-        return True
-
 
     def __repr__(self) -> str:
         return super().__repr__()
