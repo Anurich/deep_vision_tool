@@ -6,13 +6,13 @@ from typing import Dict, List, Any
 import numpy as np
 import pandas as pd 
 from ..utils.file_utils import read_from_json, read_from_image, is_coco_format, apply_bbox_to_img, \
-      visualize_and_save, visualize_segmentation_mask
+      visualize_and_save, visualize_segmentation_mask, save_to_json
 import os
 from ..utils.logging_util import initialize_logging
 import logging
 
 class ObjectDetection:
-    def __init__(self, filepath: str,  type_of_data: str, image_path: str=None, log_dir:str=None) -> None:
+    def __init__(self, filepath: str,  type_of_data: str, save_image_object:str, image_path: str=None, log_dir:str=None) -> None:
         """
             1. if type_of_data == "yolo" simply pass the 
         """
@@ -20,6 +20,7 @@ class ObjectDetection:
         self.filepath = filepath
         self.type_of_data = type_of_data
         self.image_path = image_path
+        self.save_image_object = save_image_object
         # we have currently two type of format that we cater 
         # 1 YOLO
         # 2 COCO
@@ -65,7 +66,8 @@ class ObjectDetection:
             img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations)
             postprocessed_coco_image_annotations.append(img_object)
         
-        self.logger.info("Succesfully created image object.")
+        self.logger.info("Succesfully created image object.")        
+        #save_to_json(self.save_image_object, postprocessed_coco_image_annotations)
         return postprocessed_coco_image_annotations
             
 
@@ -117,3 +119,4 @@ class ObjectDetection:
                 if isinstance(results_with_segment, str):
                     self.logger.warning(results_with_segment)
         self.logger.info("Visualization finished")
+    
