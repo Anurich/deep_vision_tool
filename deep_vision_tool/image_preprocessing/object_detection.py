@@ -1,6 +1,6 @@
 
 from ..image_object.annotation import Annotation
-from ..image_object.ImageObjectCoco import ImageInfo
+from ..image_object.Image import ImageInfo
 from typing import Dict, List, Any
 import numpy as np
 import pandas as pd 
