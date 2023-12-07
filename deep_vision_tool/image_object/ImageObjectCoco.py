@@ -1,7 +1,7 @@
-from .coco_annotation import CocoAnnotation
+from .annotation import Annotation
 from typing import List
 class ImageInfo:
-    def __init__(self,id: str, filename: str, image_path: str, im_width:int, im_height: int, annotations: List[CocoAnnotation]=None) -> None:
+    def __init__(self,id: str, filename: str, image_path: str, im_width:int, im_height: int, annotations: List[Annotation]=None) -> None:
         self.id = id
         self.filename =filename
         self.im_width = im_width

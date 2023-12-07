@@ -1,12 +1,11 @@
 
-from ..image_object.coco_annotation import CocoAnnotation
-from ..image_object.yolo_annotation import YoloAnnotation
+from ..image_object.annotation import Annotation
 from ..image_object.ImageObjectCoco import ImageInfo
 from typing import Dict, List, Any
 import numpy as np
 import pandas as pd 
 from ..utils.file_utils import read_from_json, read_from_image, is_coco_format, apply_bbox_to_img, \
-      visualize_and_save, visualize_segmentation_mask, is_dir_check,store_pickle
+      visualize_and_save, visualize_segmentation_mask, is_dir_check,store_pickle, read_text_file
 import os
 from ..utils.logging_util import initialize_logging
 import logging
@@ -25,19 +24,71 @@ class ObjectDetection:
         # 1 YOLO
         # 2 COCO
     def get_yolo_image_object(self) -> List[ImageInfo]:
-        pass
-    
+        assert self.type_of_data.lower() =="yolo", self.logger.error("they type of data is not yolo, please use type_of_data as yolo")
+        yolo_image_obj=[]
+        allFolders = os.listdir(self.filepath) # it should contain two folders images, and labels
+        
+        assert "images" in allFolders, self.logger.error("No images folder found!")
+        assert "labels" in allFolders, self.logger.error("No labels folder found!")
+        assert os.path.isfile(os.path.join(self.filepath, "labels.txt")) == True, self.logger.error("Labels.txt is missing!")
+        # constructing the paths
+        image_path = os.path.join(self.filepath, "images")
+        labels_path= os.path.join(self.filepath,"labels")
+        assert len(os.listdir(image_path)) == len(os.listdir(labels_path)), self.logger.error("images and labels length don't match...")
+        # assert [for im in ]
+        category_label_file = os.path.join(self.filepath, "labels.txt")
+        annt_ids = 0
+        for idx, imname in enumerate(os.listdir(image_path)):
+            assert imname.split(".")[0]+".txt" in os.listdir(labels_path)
+            image_file_path = os.path.join(image_path, imname)
+            _, height, width = read_from_image(image_file_path)
+
+            labels_file_path = os.path.join(labels_path, imname.split(".")[0]+".txt")
+            data = read_text_file(labels_file_path).splitlines()
+            labels_list = read_text_file(category_label_file).splitlines()
+            annotations = []
+            for annts in (data):
+                category_id, center_x, center_y, w, h  = annts.split() # yolo_labels
+                annotations.append(Annotation(
+                    image_id=idx, 
+                    id=annt_ids,
+                    bbox=[center_x, center_y, w, h],
+                    segmentation=[], 
+                    category_id=category_id, 
+                    label=labels_list[int(category_id)]))
+                annt_ids+=1
+
+            
+            img_object = ImageInfo(id=idx,
+                                   filename=imname,
+                                   image_path=image_path,
+                                   im_width=width, 
+                                   im_height=height, 
+                                   annotations=annotations)
+
+            yolo_image_obj.append(img_object)
+        
+        # now that we have the yolo object we can save this object
+        self.logger.info("Successfully created yolo image object")
+        is_dir_check([self.save_image_object_path])
+        store_pickle(yolo_image_obj, self.save_image_object_path, "yolo_image_info.pickle")
+        return yolo_image_obj
+
 
     def get_coco_image_object(self)-> List[ImageInfo]:
         """
-        Perform post-processing for COCO data.
+        Perform pre-processing for COCO data.
 
         Returns:
         List[ImageInfo]: A list of ImageInfo objects containing image and annotation information.
         """
-        assert self.type_of_data.lower() == "coco", self.logger.error("The type of data is not coco")
+        assert self.type_of_data.lower() == "coco", self.logger.error("The type of data is not coco, please use type_of_data as coco")
         coco_image_obj = []
         coco_file = list(filter(lambda x: x=="coco.json",os.listdir(self.filepath)))[0]
+        assert coco_file == "coco.json", self.logger.error("No coco.json file exist in this folder.")
+        labels_path = os.path.join(self.filepath,"labels.txt")
+        assert os.path.isfile(labels_path) == True, self.logger.error("labels.txt is missing !")
+        labels = read_text_file(labels_path).splitlines() # reading the labels
         coco_data = read_from_json(os.path.join(self.filepath,coco_file))
         # we need to check also if the data is coco type 
         assert is_coco_format(coco_data) == True, self.logger.error("Not a valid coco data.")
@@ -57,23 +108,23 @@ class ObjectDetection:
             # now that we have filtered annotations we can now create an annotation object 
             annotations = []
             for annt in filtered_annotations:
-                annotations.append(CocoAnnotation(
+                annotations.append(Annotation(
                     image_id=annt["image_id"],
                     id=annt["id"],
                     bbox=annt["bbox"],
                     segmentation=annt["segmentation"],
-                    category_id=annt["category_id"]
+                    category_id=annt["category_id"],
+                    label=labels[annt["category_id"]],
                 ))
-            
+
             # now that we have an image object and annotations object we can simply call super object with both image and annotations information
             img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations)
             coco_image_obj.append(img_object)
         
         self.logger.info("Succesfully created image object.")
         is_dir_check([self.save_image_object_path])
-        store_pickle(coco_image_obj, self.save_image_object_path)
+        store_pickle(coco_image_obj, self.save_image_object_path,"coco_img_obj.pickle")
         return coco_image_obj
-            
 
     def visualize_image_object(self, image_info_object: List[ImageInfo], total_images: int =1, plot:str="both", save_directory: str=None):
         """
@@ -122,6 +173,3 @@ class ObjectDetection:
                     self.logger.warning(results_with_segment)
         
         self.logger.info("Visualization finished")
-    
-    def check_stats(self):
-        pass

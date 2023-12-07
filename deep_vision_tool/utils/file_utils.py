@@ -362,7 +362,7 @@ def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]],
         plt.show()  
 
 
-def store_pickle(data, file_path):
+def store_pickle(data, file_path, filename):
     """
     Store data in a pickle file.
 
@@ -373,7 +373,7 @@ def store_pickle(data, file_path):
     Returns:
     - None
     """
-    with open(os.path.join(file_path,"coco_img_obj.pickle"), 'wb') as file:
+    with open(os.path.join(file_path,filename), 'wb') as file:
         pickle.dump(data, file)
     print(f'Data successfully stored in {file_path}')
 
