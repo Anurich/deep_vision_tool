@@ -5,7 +5,7 @@ from typing import Dict, List, Any
 import numpy as np
 import pandas as pd 
 from ..utils.file_utils import read_from_json, read_from_image, is_coco_format, apply_bbox_to_img, \
-      visualize_and_save, visualize_segmentation_mask, is_dir_check,store_pickle, read_text_file
+      visualize_and_save, visualize_segmentation_mask, is_dir_check,store_pickle, read_text_file, convert_yolo_to_coco
 import os
 from ..utils.logging_util import initialize_logging
 import logging
@@ -149,24 +149,30 @@ class ObjectDetection:
             # now we can take tha annotations 
             bboxes = []
             segmentations = []
+            labels =[]
             for annt in imginfo.annotations:
-               bboxes.append(annt.bbox)
-               segmentations.extend(annt.segmenation)
+                if self.type_of_data == "yolo":
+                    bboxes.append(convert_yolo_to_coco(annt.bbox,imginfo.im_width, imginfo.im_height))
+                else:
+                    bboxes.append(annt.bbox)
+
+                segmentations.extend(annt.segmenation)
+                labels.append(annt.label)
 
             # let's plot these annotations 
             if plot=="bbox":
-                img_with_bbox = apply_bbox_to_img(bboxes, img)
+                img_with_bbox = apply_bbox_to_img(bboxes, img, labels)
                 results = visualize_and_save(img_with_bbox, save_directory, imgfile)
                 if isinstance(results, str):
                     self.logger.warning(results)
             elif plot =="segmentation":
-                results = visualize_segmentation_mask(segmentations, img,width, height, save_directory, imgfile)
+                results = visualize_segmentation_mask(segmentations, img,width, height, save_directory, imgfile, labels)
                 if isinstance(results, str):
                     self.logger.warning(results)
             elif plot=="both":
-                img_with_bbox = apply_bbox_to_img(bboxes, img.copy())
+                img_with_bbox = apply_bbox_to_img(bboxes, img.copy(), labels)
                 results_with_bbox = visualize_and_save(img_with_bbox, save_directory, imgfile)
-                results_with_segment = visualize_segmentation_mask(segmentations, img.copy(),width, height, save_directory, imgfile)
+                results_with_segment = visualize_segmentation_mask(segmentations, img.copy(),width, height, save_directory, imgfile,labels)
                 if isinstance(results_with_bbox, str):
                     self.logger.warning(results_with_bbox)
                 if isinstance(results_with_segment, str):

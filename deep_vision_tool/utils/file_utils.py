@@ -7,6 +7,11 @@ import matplotlib.pyplot as plt
 import os 
 from PIL import Image
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+font_scale = 0.5
+font_thickness = 1
+font_color = (255, 255, 255)
+
 def read_from_json(file_path: str) -> Any:
     """
     Read data from a JSON file.
@@ -175,7 +180,7 @@ def save_img(image_path: str, img: np.array) -> None:
     cv2.imwrite(image_path, img)
 
 
-def apply_bbox_to_img(allbboxes: List[List], img: np.array) -> np.array:
+def apply_bbox_to_img(allbboxes: List[List], img: np.array, labels: List[str]) -> np.array:
     """
     Apply bounding boxes to an image.
 
@@ -189,11 +194,17 @@ def apply_bbox_to_img(allbboxes: List[List], img: np.array) -> np.array:
     Note:
     - Bounding box coordinates are assumed to be in the format [x1, y1, width, height].
     """
-    for bbox in allbboxes:
+
+    assert len(allbboxes) == len(labels)
+    for idx, bbox in enumerate(allbboxes):
+        label = labels[idx]
+        text =f"Label: {label}"
         x1, y1, w, h = list(map(int, bbox))
+        text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
+        text_position = (x1 + (w - text_size[0]) // 2, y1 - 10)
+        cv2.putText(img, text, text_position, font, font_scale, font_color, font_thickness)
         cv2.rectangle(img, (x1, y1), (x1 + w, y1 + h),  color=(0, 0, 255),  thickness=2)
     return img
-
 
 def save_categories(categories: List, path_to_store_label: str) -> None:
     """
@@ -312,18 +323,19 @@ def visualize_and_save(img: np.array, save_directory: str, filename: str) -> Uni
     Returns:
     - Union[str, bool]: Returns a string if save_directory is empty, otherwise returns True after saving the image.
     """
-    plt.imshow(img)
-    plt.show()
-
     # Save the image inside the directory
     if save_directory is None:
         return "Save directory is empty"
     else:
-        cv2.imwrite(os.path.join(save_directory, filename), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        # including the label name 
+        img =cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        plt.imshow(img)
+        plt.show()
+        cv2.imwrite(os.path.join(save_directory, filename), img)
         return True
 
 def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]], img: np.array,
-                                width: int, height: int, save_directory: str, filename: str):
+                                width: int, height: int, save_directory: str, filename: str, labels: List[str]):
     """
     Visualize segmentation masks on top of the original image and save the result.
 
@@ -338,8 +350,16 @@ def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]],
     Returns:
     - None: Displays the visualized image and saves it to the specified directory.
     """
+
     masks = []
-    for segment in coordinates_list:
+    label_positions = dict()
+    for idx, segment in enumerate(coordinates_list):
+        text = f"Label: {labels[idx]}"
+        label_position = (segment[0], segment[1] - 10)
+        if label_positions.get(text) == None:
+            label_positions[text] = [label_position]
+        else:
+            label_positions[text].append(label_position)
         segmentation = np.array(segment, dtype=np.int32).reshape((-1, 2))
         mask = np.zeros((height, width), dtype=np.uint8)
         cv2.fillPoly(mask, [segmentation], color=1)
@@ -356,11 +376,14 @@ def visualize_segmentation_mask(coordinates_list: List[List[Union[int, float]]],
 
     # Save the visualized image and display it
     if save_directory is not None:
+        for label, positions in label_positions.items():
+            for pos in positions:
+                cv2.putText(img, label, pos, font, font_scale, font_color, font_thickness)
+                cv2.putText(overlay, label, pos, font, font_scale, font_color, font_thickness)
         plt.subplot(1, 2, 1), plt.imshow(img), plt.title('Original Image')
         plt.subplot(1, 2, 2), plt.imshow(overlay), plt.title('Overlay')
         cv2.imwrite(os.path.join(save_directory, "seg_" + filename), cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
         plt.show()  
-
 
 def store_pickle(data, file_path, filename):
     """
