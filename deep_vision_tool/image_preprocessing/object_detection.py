@@ -13,7 +13,25 @@ import logging
 class ObjectDetection:
     def __init__(self, filepath: str,  type_of_data: str, save_image_object_path:str, image_path: str=None, log_dir:str=None) -> None:
         """
-            1. if type_of_data == "yolo" simply pass the 
+            Initialize the data handler.
+
+            Parameters:
+            - filepath (str): The path to the data file.
+            - type_of_data (str): The type of data, either "yolo" or other.
+            - save_image_object_path (str): The path to save image objects.
+            - image_path (str, optional): The path to the image directory. Defaults to None.
+            - log_dir (str, optional): The directory for log files. Defaults to None.
+
+            If `type_of_data` is "yolo", provide the path to the YOLO data file using `filepath`.
+            For other types of data, ensure to provide the necessary paths and configurations.
+
+            Attributes:
+            - logger: Logger object for logging information.
+            - filepath (str): The path to the data file.
+            - type_of_data (str): The type of data.
+            - image_path (str): The path to the image directory, if applicable.
+            - save_image_object_path (str): The path to save image objects.
+            - log_dir (str): The directory for log files.
         """
         self.logger = initialize_logging(log_dir)
         self.filepath = filepath

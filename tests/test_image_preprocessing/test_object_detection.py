@@ -7,7 +7,6 @@ def test_obj(tmp_path):
     objimage_coco = ObjectDetection("data_folder/coco/","coco", tmp_path, "data_folder/training_images/","logs")
     imgObject = objimage_yolo.get_yolo_image_object()
     imgObject_coco = objimage_coco.get_coco_image_object()
-    
     for iminfo in imgObject:
         assert isinstance(iminfo.filename, str)
         assert isinstance(iminfo.image_path, str)
