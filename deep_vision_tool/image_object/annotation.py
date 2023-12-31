@@ -12,3 +12,6 @@ class Annotation:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(image_id={self.image_id},id={self.id}, bbox={self.bbox},segmentation={self.segmenation},category_id={self.category_id}, label={self.label})"
+    
+
+    

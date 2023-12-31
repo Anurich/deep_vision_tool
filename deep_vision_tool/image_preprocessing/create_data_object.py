@@ -197,3 +197,4 @@ class ObjectDetection:
                     self.logger.warning(results_with_segment)
         
         self.logger.info("Visualization finished")
+        

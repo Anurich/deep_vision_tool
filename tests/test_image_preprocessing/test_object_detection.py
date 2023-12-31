@@ -1,5 +1,5 @@
 from conftest  import *
-from deep_vision_tool.image_preprocessing.object_detection import ObjectDetection
+from deep_vision_tool.image_preprocessing.create_data_object import ObjectDetection
 from deep_vision_tool.image_object.annotation import Annotation
 import pytest
 def test_obj(tmp_path):
