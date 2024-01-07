@@ -31,7 +31,7 @@ jobs:
       run: |
         sudo apt-get install python3.10-distutils
         python -m pip install --upgrade pip
-        pip install -r tests/requirements.txt
+        pip install -r requirements.txt
 
     - name: Run tests
       run: |
