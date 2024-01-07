@@ -6,3 +6,5 @@ pytest==7.2.1
 sahi
 matplotlib
 transformers
+torch 
+torchvision
