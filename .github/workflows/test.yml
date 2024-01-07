@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9.13
+        python-version: 3.9
 
     - name: Cache dependencies
       uses: actions/cache@v2
@@ -29,15 +29,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install python3.9.13-distutils
         python -m pip install --upgrade pip
+        pip install .
         pip install -r requirements.txt
 
     - name: Run tests
       run: |
-        pytest -s -v tests/dataset_conversion_test/tests_coco_creation_dataset.py
-        pytest -s -v tests/dataset_conversion_test/tests_yolo_creation_dataset.py
-        pytest -s -v tests/dataset_conversion_test/tests_coco_to_yolo.py
-        pytest -s -v tests/dataset_conversion_test/tests_yolo_to_coco.py
-        pytest -s -v tests/test_image_preprocessing/test_object_detection.py
-        pytest -s -v tests/test_model_for_classification/test_transformers_without_adapter_for_classification.py
+        python -m pytest --cov=deep_vision_tool tests/ -s -v --cov-report term-missing 
