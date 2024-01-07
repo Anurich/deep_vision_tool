@@ -7,4 +7,4 @@ sahi
 matplotlib==3.7.0
 transformers
 setuptools==64.0.2
-torchvision==0.14.0
+torchvision==0.16.0
