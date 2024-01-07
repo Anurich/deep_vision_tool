@@ -39,3 +39,4 @@ jobs:
         pytest -s -v tests/dataset_conversion_test/tests_coco_to_yolo.py
         pytest -s -v tests/dataset_conversion_test/tests_yolo_to_coco.py
         pytest -s -v tests/test_image_preprocessing/test_object_detection.py
+        pytest -s -v tests/test_model_for_classification/test_transformers_without_adapter_for_classification.py
