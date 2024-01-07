@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.x
+        python-version: 3.9.13
 
     - name: Cache dependencies
       uses: actions/cache@v2
@@ -29,7 +29,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install python3.10-distutils
+        sudo apt-get install python-distutils
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
