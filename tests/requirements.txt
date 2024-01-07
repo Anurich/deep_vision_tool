@@ -5,5 +5,3 @@ Pillow==10.2.0
 pytest==7.2.1
 sahi
 matplotlib==3.7.0
-torchvision
-transformers==4.24.0
