@@ -45,6 +45,6 @@ def test_kfcv(dummy_data, tmp_path):
     assert len(allFolds) == 5
     for fold in allFolds:
         path = os.path.join(output_path, fold)
-        os.listdir(path) == 2
+        assert len(os.listdir(path)) == 2
         assert "dev.pickle" in os.listdir(path)
         assert "train.pickle" in os.listdir(path)

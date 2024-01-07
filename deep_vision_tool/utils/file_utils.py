@@ -33,9 +33,51 @@ def save_to_json(file_path: str, results: Dict) -> None:
     - file_path (str): Path to the JSON file.
     - results (Dict): Data to be saved to the file.
     """
+    
     with open(file_path, "w", encoding="utf8") as fp:
         json.dump(results, fp, ensure_ascii=False, indent=4)
 
+def write_jsonl(filename, data_list):
+    """
+    Write a list of dictionaries to a JSON Lines (JSONL) file.
+
+    Parameters:
+    - filename (str): The name of the file to be written.
+    - data_list (list): A list of dictionaries to be written to the file.
+
+    Example:
+    >>> data_list = [
+    ...     {"name": "John", "age": 25},
+    ...     {"name": "Alice", "age": 30},
+    ...     {"name": "Bob", "age": 22}
+    ... ]
+    >>> write_jsonl("output.jsonl", data_list)
+    """
+    with open(filename, 'w') as file:
+        for data in data_list:
+            json_line = json.dumps(data)
+            file.write(json_line + '\n')
+    
+def read_jsonl(filename):
+    """
+    Read a JSON Lines (JSONL) file and return a list of dictionaries.
+
+    Parameters:
+    - filename (str): The name of the JSONL file to be read.
+
+    Returns:
+    - list: A list of dictionaries containing the parsed JSON objects from the file.
+
+    Example:
+    >>> data_list = read_jsonl("input.jsonl")
+    """
+    data_list = []
+    with open(filename, 'r') as file:
+        for line in file:
+            # Strip newline character and parse JSON
+            json_data = json.loads(line.strip())
+            data_list.append(json_data)
+    return data_list
 
 def read_from_image(img_path: str) -> Tuple[Union[np.array, int, int]]:
     """
@@ -53,7 +95,7 @@ def read_from_image(img_path: str) -> Tuple[Union[np.array, int, int]]:
     return np.array(img), height,  width
 
 
-def convert_bbox_to_coco_bbox(bbox: List) -> List:
+def convert_bbox_to_coco_bbox(bbox: List, type:str="none") -> List:
     """
     Convert bounding box coordinates to COCO format.
 
@@ -66,8 +108,9 @@ def convert_bbox_to_coco_bbox(bbox: List) -> List:
     x1, y1, x2, y2 = bbox
     w = x2 - x1
     h = y2 - y1
-    assert w >= 0 and h >= 0, "Negative width or height"
-    assert w != 0 or h != 0, "Zero width and height not allowed"
+    if type != "classification":
+        assert w >= 0 and h >= 0, "Negative width or height"
+        assert w != 0 or h != 0, "Zero width and height not allowed"
     return [int(x1), int(y1), int(w), int(h)]
 
 
@@ -272,7 +315,7 @@ def bbox_to_segmentation(bbox: List) -> List:
     return segmentation
 
 
-def is_coco_format(data: Dict[str, Any]) -> bool:
+def is_coco_format(data: Dict[str, Any], type: str="object_detection") -> bool:
     """
     Check if the data is in COCO format.
 
@@ -283,6 +326,7 @@ def is_coco_format(data: Dict[str, Any]) -> bool:
     - bool: True if the data is in COCO format, False otherwise.
     """
     # Check for the presence of required keys
+    print(data)
     required_keys = {'annotations', 'images', 'categories'}
     if not all(key in data for key in required_keys):
         return False
@@ -298,8 +342,12 @@ def is_coco_format(data: Dict[str, Any]) -> bool:
             return False
 
         # Check the structure of the bounding box
-        if not isinstance(annotation['bbox'], list) or len(annotation['bbox']) != 4:
-            return False
+        if type != "classification":
+            if not isinstance(annotation['bbox'], list) or len(annotation['bbox']) != 4:
+                return False
+        if type == "classification":
+            if not isinstance(annotation['bbox'], list) or len(annotation['bbox']) == 4:
+                return False
 
     # Check the structure of the 'images' key
     if not isinstance(data['images'], list):
@@ -400,7 +448,7 @@ def store_pickle(data, file_path, filename):
         pickle.dump(data, file)
     print(f'Data successfully stored in {file_path}')
 
-def read_pickle(file_path):
+def read_pickle(file_path, filename="coco_img_obj.pickle"):
     """
     Read data from a pickle file.
 
@@ -410,7 +458,46 @@ def read_pickle(file_path):
     Returns:
     - Any: Data read from the pickle file.
     """
-    with open(os.path.join(file_path,"coco_img_obj.pickle"), 'rb') as file:
+    filePath = file_path if filename == "" else os.path.join(file_path, filename)
+
+    with open(filePath, 'rb') as file:
         data = pickle.load(file)
     print(f'Data successfully read from {file_path}')
     return data
+
+
+def convert_to_classification_format(json_data):
+    """
+    Convert the given JSON data from object detection format to classification format.
+
+    This function modifies the input JSON data by updating the "bbox" and "segmentation"
+    fields for each annotation to be consistent with classification format, ensuring that
+    each annotation has placeholder values for bounding box and segmentation.
+
+    Parameters:
+    - json_data (list): A list of dictionaries representing JSON data in object detection format.
+                       Each dictionary should have an "annotations" field containing a list
+                       of annotations, where each annotation includes a "bbox" and "segmentation" field.
+
+    Returns:
+    - list: The modified JSON data with "bbox" and "segmentation" fields updated for each annotation,
+            now containing placeholder values.
+
+    Example:
+        input_json_data = [
+            {"annotations": [{"bbox": [x1, y1, x2, y2], "segmentation": [s1, s2, ..., s8]}, ...]},
+            {"annotations": [{"bbox": [x1, y1, x2, y2], "segmentation": [s1, s2, ..., s8]}, ...]},
+            ...
+        ]
+    output_json_data = convert_to_classification_format(input_json_data)
+    """
+    for i in range(len(json_data)):
+        temp_annt = []
+        for annt in json_data[i]["annotations"]:
+            annt["bbox"] = [0] * 4
+            annt["segmentation"] = [0] * 8
+            temp_annt.append(annt)
+        
+        json_data[i]["annotations"] = temp_annt
+    return json_data
+

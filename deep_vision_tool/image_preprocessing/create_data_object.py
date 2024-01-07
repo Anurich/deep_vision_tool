@@ -11,7 +11,9 @@ from ..utils.logging_util import initialize_logging
 import logging
 
 class ObjectDetection:
-    def __init__(self, filepath: str,  type_of_data: str, save_image_object_path:str, image_path: str=None, log_dir:str=None) -> None:
+    def __init__(self, filepath: str,  type_of_data: str, \
+                save_image_object_path:str, \
+                image_path: str=None, log_dir:str=None, type:str="object_detection") -> None:
         """
             Initialize the data handler.
 
@@ -35,6 +37,7 @@ class ObjectDetection:
         """
         self.logger = initialize_logging(log_dir)
         self.filepath = filepath
+        self.type = type
         self.type_of_data = type_of_data
         self.image_path = image_path
         self.save_image_object_path = save_image_object_path
@@ -109,7 +112,7 @@ class ObjectDetection:
         labels = read_text_file(labels_path).splitlines() # reading the labels
         coco_data = read_from_json(os.path.join(self.filepath,coco_file))
         # we need to check also if the data is coco type 
-        assert is_coco_format(coco_data) == True, self.logger.error("Not a valid coco data.")
+        assert is_coco_format(coco_data,type=self.type) == True, self.logger.error("Not a valid coco data.")
         # now that we have coco data we can create and object containing the image object and annotations 
         images = coco_data["images"]
         annotations = coco_data["annotations"]
@@ -122,11 +125,14 @@ class ObjectDetection:
             img_filename = img["file_name"]
             img_width = img["width"]
             img_height = img["height"]
-            filtered_annotations = (filter(lambda x: int(x["image_id"])==int(img_id), annotations))
+            filtered_annotations = list(filter(lambda x: int(x["image_id"])==int(img_id), annotations))
             # now that we have filtered annotations we can now create an annotation object 
-            annotations = []
+            annotations_object = []
             for annt in filtered_annotations:
-                annotations.append(Annotation(
+                if self.type == "classification":
+                    annt["bbox"] = [0]*4
+                    annt["segmentation"] =[0]*8
+                annotations_object.append(Annotation(
                     image_id=annt["image_id"],
                     id=annt["id"],
                     bbox=annt["bbox"],
@@ -134,15 +140,15 @@ class ObjectDetection:
                     category_id=annt["category_id"],
                     label=labels[annt["category_id"]],
                 ))
-
             # now that we have an image object and annotations object we can simply call super object with both image and annotations information
-            img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations)
+            img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations_object)
             coco_image_obj.append(img_object)
-        
+
         self.logger.info("Succesfully created image object.")
         is_dir_check([self.save_image_object_path])
         store_pickle(coco_image_obj, self.save_image_object_path,"coco_img_obj.pickle")
         return coco_image_obj
+
 
     def visualize_image_object(self, image_info_object: List[ImageInfo], total_images: int =1, plot:str="both", save_directory: str=None):
         """

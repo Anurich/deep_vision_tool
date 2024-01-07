@@ -10,7 +10,7 @@ from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
 from sahi.utils.file import save_json
 from .dataset import Dataset
 from ..utils import logging_util
-from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories,is_dir_check,bbox_to_segmentation
+from ..utils.file_utils import get_all_categories, read_from_image,convert_bbox_to_coco_bbox, save_categories,is_dir_check,bbox_to_segmentation, convert_to_classification_format
 import json
 """
 [
@@ -37,9 +37,14 @@ import json
 This is the format expected from this function in order to create a coco file.
 """
 class CocoConverter(Dataset):
-    def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str) -> None:
+    def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str, type:str) -> None:
         super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
+        self.type = type
+        # if it's classification we simply add 0,0,0,0 in bboxes and segmentation  
+        if type=="classification":
+            json_data = convert_to_classification_format(json_data=json_data)
+        
         if not self.is_valid_json_structure(json_data):
             self.logger.error("Error! Please check the file structure")
         else:
@@ -51,12 +56,14 @@ class CocoConverter(Dataset):
                 self.logger.info("Starting Conversion To COCO....")
                 is_dir_check([self.save_json_path])
                 save_categories(self.all_categories, self.save_json_path)
+                
                 self.convert(self.all_categories)
 
     def is_valid_json_structure(self,data):
         if not isinstance(data, list):
             return False
         entry = data[0]
+       
         if not isinstance(entry, dict) or "image_id" not in entry or "img_name" not in entry or "annotations" not in entry:
             return False
         if not isinstance(entry["image_id"], int) or not isinstance(entry["img_name"], str) or not isinstance(entry["annotations"], list):
@@ -66,7 +73,6 @@ class CocoConverter(Dataset):
                 return False
             if not isinstance(annotation["label"], str) or not isinstance(annotation["bbox"], list) or len(annotation["bbox"]) != 4 or not all(isinstance(coord, (int, float)) for coord in annotation["bbox"]) or not isinstance(annotation["segmentation"], list) or not isinstance(annotation["area"], (int, float)):
                 return False
-
         return True
 
     def convert(self, categories_name: List[str]):
@@ -80,7 +86,7 @@ class CocoConverter(Dataset):
             _, height, width = read_from_image(os.path.join(self.path_to_image, dd["img_name"]))
             cocimg = CocoImage(file_name=dd["img_name"], height=height, width=width)
             for annt in dd["annotations"]:
-                converted_bbox_to_coco = convert_bbox_to_coco_bbox(annt["bbox"])
+                converted_bbox_to_coco = convert_bbox_to_coco_bbox(annt["bbox"], type=self.type)
                 cocimg.add_annotation(
                     CocoAnnotation(
                         bbox=converted_bbox_to_coco,
