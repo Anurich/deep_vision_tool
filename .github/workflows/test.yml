@@ -35,4 +35,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m pytest --cov=deep_vision_tool tests/ -s -v --cov-report term-missing 
+        python -m pytest --cov=hair_style_recommendation tests/ -s -v --cov-report term-missing 
