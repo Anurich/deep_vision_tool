@@ -6,4 +6,4 @@ pytest==7.2.1
 sahi
 matplotlib==3.7.0
 transformers
-torchvision
+torchvision==0.14.0
