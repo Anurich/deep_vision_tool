@@ -77,7 +77,7 @@ class ObjectDetection:
                     bbox=[center_x, center_y, w, h],
                     segmentation=[], 
                     category_id=category_id, 
-                    label=labels_list[int(category_id)], type=type))
+                    label=labels_list[int(category_id)], type=self.type))
                 annt_ids+=1
             
             img_object = ImageInfo(id=idx,
@@ -90,6 +90,7 @@ class ObjectDetection:
             self.yolo_image_obj.append(img_object)
         
         # now that we have the yolo object we can save this object
+
         self.logger.info("Successfully created yolo image object")
         is_dir_check([self.save_image_object_path])
         #saving in write_jsonl
