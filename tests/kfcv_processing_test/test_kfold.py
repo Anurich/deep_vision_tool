@@ -19,7 +19,8 @@ def dummy_data():
                 bbox=[23 *j+1,21*j+1,22*j+1,12*j+1],
                 segmentation=[],
                 category_id=0,
-                label="apple"
+                label="apple",
+                type="object_detection"
             ))
         
         imgs.append(ImageInfo(
