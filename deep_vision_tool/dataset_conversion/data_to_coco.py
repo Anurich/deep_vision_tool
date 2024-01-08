@@ -38,11 +38,10 @@ This is the format expected from this function in order to create a coco file.
 """
 class CocoConverter(Dataset):
     def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str, type:str="object_detection") -> None:
-        super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
+        super().__init__(json_data, path_to_image, save_json_path, logger_output_dir, type)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
-        self.type = type
         # if it's classification we simply add 0,0,0,0 in bboxes and segmentation  
-        if type=="classification":
+        if self.type=="classification":
             json_data = convert_to_classification_format(json_data=json_data)
         
         if not self.is_valid_json_structure(json_data):

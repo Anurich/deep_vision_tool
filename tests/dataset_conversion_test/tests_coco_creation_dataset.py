@@ -47,7 +47,6 @@ def make_dummy_data(tmp_path):
         x1, y1, x2, y2 = df.loc[index][["xmin", "ymin", "xmax", "ymax"]]
         bboxes.append([int(x1), int(y1), int(x2), int(y2)])
     
-
     json_data = [
         {
             "image_id": 1,
@@ -83,4 +82,4 @@ def test_convert_to_coco(make_dummy_data):
     img = cv2.imread(os.path.join(imgpath, json_data[0]["img_name"]))
     jsdata = read_from_json(os.path.join(savejsonpath, "coco.json"))
     assert len(jsdata["annotations"]) == 2
-    assert len(os.listdir(savejsonpath)) == 4
+    assert len(os.listdir(savejsonpath)) == 4   

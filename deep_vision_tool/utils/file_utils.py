@@ -114,7 +114,7 @@ def convert_bbox_to_coco_bbox(bbox: List, type:str="none") -> List:
     return [int(x1), int(y1), int(w), int(h)]
 
 
-def convert_bbox_to_yolo_bbox(bbox: List, is_coco: bool = False) -> List:
+def convert_bbox_to_yolo_bbox(bbox: List, is_coco: bool = False, type:str="object_detection") -> List:
     """
     Convert bounding box coordinates to YOLO format.
 
@@ -127,7 +127,7 @@ def convert_bbox_to_yolo_bbox(bbox: List, is_coco: bool = False) -> List:
     """
     if not is_coco:
         x1, y1, x2, y2 = bbox
-        x, y, w, h = convert_bbox_to_coco_bbox([x1, y1, x2, y2])
+        x, y, w, h = convert_bbox_to_coco_bbox([x1, y1, x2, y2], type)
     else:
         x, y, w, h = bbox
 

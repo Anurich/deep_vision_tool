@@ -46,7 +46,7 @@ class ObjectDetection:
         # 2 COCO
     def get_yolo_image_object(self) -> List[ImageInfo]:
         assert self.type_of_data.lower() =="yolo", self.logger.error("they type of data is not yolo, please use type_of_data as yolo")
-        yolo_image_obj=[]
+        self.yolo_image_obj=[]
         allFolders = os.listdir(self.filepath) # it should contain two folders images, and labels
         
         assert "images" in allFolders, self.logger.error("No images folder found!")
@@ -68,6 +68,7 @@ class ObjectDetection:
             data = read_text_file(labels_file_path).splitlines()
             labels_list = read_text_file(category_label_file).splitlines()
             annotations = []
+            
             for annts in (data):
                 category_id, center_x, center_y, w, h  = annts.split() # yolo_labels
                 annotations.append(Annotation(
@@ -76,9 +77,8 @@ class ObjectDetection:
                     bbox=[center_x, center_y, w, h],
                     segmentation=[], 
                     category_id=category_id, 
-                    label=labels_list[int(category_id)]))
+                    label=labels_list[int(category_id)], type=type))
                 annt_ids+=1
-
             
             img_object = ImageInfo(id=idx,
                                    filename=imname,
@@ -87,13 +87,13 @@ class ObjectDetection:
                                    im_height=height, 
                                    annotations=annotations)
 
-            yolo_image_obj.append(img_object)
+            self.yolo_image_obj.append(img_object)
         
         # now that we have the yolo object we can save this object
         self.logger.info("Successfully created yolo image object")
         is_dir_check([self.save_image_object_path])
-        store_pickle(yolo_image_obj, self.save_image_object_path, "yolo_image_info.pickle")
-        return yolo_image_obj
+        #saving in write_jsonl
+        store_pickle(self.yolo_image_obj, self.save_image_object_path, "yolo_image_info.pickle")
 
 
     def get_coco_image_object(self)-> List[ImageInfo]:
@@ -104,7 +104,7 @@ class ObjectDetection:
         List[ImageInfo]: A list of ImageInfo objects containing image and annotation information.
         """
         assert self.type_of_data.lower() == "coco", self.logger.error("The type of data is not coco, please use type_of_data as coco")
-        coco_image_obj = []
+        self.coco_image_obj = []
         coco_file = list(filter(lambda x: x=="coco.json",os.listdir(self.filepath)))[0]
         assert coco_file == "coco.json", self.logger.error("No coco.json file exist in this folder.")
         labels_path = os.path.join(self.filepath,"labels.txt")
@@ -139,15 +139,15 @@ class ObjectDetection:
                     segmentation=annt["segmentation"],
                     category_id=annt["category_id"],
                     label=labels[annt["category_id"]],
+                    type=self.type
                 ))
             # now that we have an image object and annotations object we can simply call super object with both image and annotations information
             img_object = ImageInfo(id=img_id, filename=img_filename,image_path=self.image_path, im_width=img_width, im_height=img_height, annotations=annotations_object)
-            coco_image_obj.append(img_object)
+            self.coco_image_obj.append(img_object)
 
         self.logger.info("Succesfully created image object.")
         is_dir_check([self.save_image_object_path])
-        store_pickle(coco_image_obj, self.save_image_object_path,"coco_img_obj.pickle")
-        return coco_image_obj
+        store_pickle(self.coco_image_obj, self.save_image_object_path,"coco_img_obj.pickle")
 
 
     def visualize_image_object(self, image_info_object: List[ImageInfo], total_images: int =1, plot:str="both", save_directory: str=None):

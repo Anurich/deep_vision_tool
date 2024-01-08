@@ -6,13 +6,19 @@ import numpy as np
 from .dataset import Dataset
 from ..utils import logging_util
 from ..utils.file_utils import  get_all_categories, read_from_image,convert_bbox_to_yolo_bbox,\
-                        yolo_normalization, write_to_text,is_dir_check, save_img, read_from_image,save_categories
+                        yolo_normalization, write_to_text,is_dir_check, save_img, read_from_image,save_categories,  convert_to_classification_format
 import json
 
 class YOLOConverter(Dataset):
-    def __init__(self, json_data: List[Dict[str, any]], path_to_image: str, save_json_path: str, logger_output_dir:str) -> None:
-        super().__init__(json_data, path_to_image, save_json_path, logger_output_dir)
+    def __init__(self, json_data: List[Dict[str, any]], 
+                 path_to_image: str, 
+                 save_json_path: str, 
+                 logger_output_dir:str,
+                 type:str="object_detection") -> None:
+        super().__init__(json_data, path_to_image, save_json_path, logger_output_dir,type)
         self.logger = logging_util.initialize_logging(self.logger_output_dir)
+        if self.type == "classification":
+            self.json_data = convert_to_classification_format(json_data=self.json_data)
         if not self.is_valid_json_structure(self.json_data):
             self.logger.error("Error! Please check the file structure")
         else:
@@ -68,7 +74,7 @@ class YOLOConverter(Dataset):
                 label = annt["label"]
                 category_id  = self.label2index[label]
                 bbox = annt["bbox"]
-                bbox = yolo_normalization(convert_bbox_to_yolo_bbox(bbox), height, width)
+                bbox = yolo_normalization(convert_bbox_to_yolo_bbox(bbox,type=self.type), height, width)
                 x_center_norm, y_center_norm, x_norm, y_norm = bbox
                 records = f"{category_id} {x_center_norm} {y_center_norm} {x_norm} {y_norm}"
                 write_to_text(os.path.join(labels_path, imgname.split(".")[0]+".txt"), records)
