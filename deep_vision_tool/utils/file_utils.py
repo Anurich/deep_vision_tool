@@ -208,8 +208,7 @@ def is_dir_check(list_of_paths: List) -> None:
     - list_of_paths (List): List of paths to be checked.
     """
     for path in list_of_paths:
-        if not os.path.isdir(path):
-            os.mkdir(path)
+        os.makedirs(path, exist_ok=True)
 
 
 def save_img(image_path: str, img: np.array) -> None:
@@ -326,7 +325,6 @@ def is_coco_format(data: Dict[str, Any], type: str="object_detection") -> bool:
     - bool: True if the data is in COCO format, False otherwise.
     """
     # Check for the presence of required keys
-    print(data)
     required_keys = {'annotations', 'images', 'categories'}
     if not all(key in data for key in required_keys):
         return False
