@@ -34,7 +34,7 @@ class YoloToCocoConverter:
         for img in allImages:
             imgpath = os.path.join(self.path_to_image, img)
             _, height, width = read_from_image(imgpath)
-            annotations_file = img.split(".")[0]+".txt"
+            annotations_file = img.replace(".jpg", ".txt")
             annotations  = read_text_file(os.path.join(self.text_path, annotations_file)).splitlines()
             cocimg = CocoImage(file_name=img, height=height, width=width)
             for annt in annotations:
