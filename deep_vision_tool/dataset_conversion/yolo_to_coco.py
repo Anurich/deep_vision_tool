@@ -40,6 +40,7 @@ class YoloToCocoConverter:
             cocimg = CocoImage(file_name=img, height=height, width=width)
             for annt in annotations:
                 category_id, x_center, y_center, w, h = annt.split()
+                assert category_id <= len(self.labels), "Category id is more than labels provided!"
                 label = self.labels[int(category_id)]
                 bbox_coco =convert_yolo_to_coco([x_center, y_center, w, h], width, height)
                 cocimg.add_annotation(CocoAnnotation(bbox=bbox_coco, \
