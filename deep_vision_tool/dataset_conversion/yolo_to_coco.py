@@ -1,6 +1,7 @@
 import logging
 from typing import List, Dict
 import os 
+from tqdm import tqdm
 from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
 from sahi.utils.file import save_json
 from .dataset import Dataset
@@ -31,7 +32,7 @@ class YoloToCocoConverter:
         is_dir_check([self.save_json_path])
         allImages = os.listdir(self.path_to_image)
         cid_to_label =dict()
-        for img in allImages:
+        for img in tqdm(allImages):
             imgpath = os.path.join(self.path_to_image, img)
             _, height, width = read_from_image(imgpath)
             annotations_file = img.replace(".jpg", ".txt")
