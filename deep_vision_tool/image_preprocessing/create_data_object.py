@@ -10,7 +10,7 @@ import os
 from ..utils.logging_util import initialize_logging
 import logging
 
-class ObjectDetection:
+class imageObjectCreation:
     def __init__(self, filepath: str,  type_of_data: str, \
                 save_image_object_path:str, \
                 image_path: str=None, log_dir:str=None, type:str="object_detection") -> None:
